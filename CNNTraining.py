@@ -26,7 +26,7 @@ def load_images(folder, label):
             
             # Check if image is loaded correctly
             if img is not None:
-                img = cv2.resize(img, (64, 64))
+                img = cv2.resize(img, (416, 416))
                 data.append(img)
                 labels.append(label)
        

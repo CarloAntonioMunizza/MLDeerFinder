@@ -15,16 +15,15 @@ def break_into_grid(image, grid_num = 16):
     
     # get dimensions
     if len(image.shape) == 4:
-        image_num, height, width, channels = image.shape
+        _, height, width, _ = image.shape
     elif len(image.shape) == 3:
-        height, width, channels = image.shape
+        height, width, _ = image.shape
         image = np.expand_dims(image, axis=0)
     else:
         raise ValueError("Unsupported image shape")
     
     grid_height = height // grid_num
     grid_width = width // grid_num
-    
     
     divided_image = []
     
@@ -39,10 +38,7 @@ def break_into_grid(image, grid_num = 16):
     for row in divided_image:
         for grid in row:
             # Calculate center coords     
-    
-               
             center_cord = (grid_height // 2, grid_width // 2)
-            print(center_cord)
             
             cv2.circle(grid[0], center_cord, 2, (128, 128, 128), -1)
     

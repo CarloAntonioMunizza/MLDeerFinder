@@ -127,17 +127,15 @@ x_train, x_test, y_train, y_test, bbox_train, bbox_test = train_test_split(data,
 # Create the model
 inputs = Input(shape=(dims, dims, 3))
 x = SeparableConv2D(32, (3, 3), activation='relu')(inputs)
-x = SeparableConv2D(64, (3, 3), activation='relu')(x)
-x = MaxPooling2D((2, 2))(x)
-x = SeparableConv2D(64, (3, 3), activation='relu')(x)
-x = SeparableConv2D(128, (3, 3), activation='relu')(x)
-x = MaxPooling2D((2, 2))(x)
-x = SeparableConv2D(128, (3, 3), activation='relu')(x)
-x = SeparableConv2D(256, (3, 3), activation='relu')(x)
-x = MaxPooling2D((2, 2))(x)
+x = SeparableConv2D(64, (4, 4), activation='relu')(x)
+x = MaxPooling2D((3, 3))(x)
+x = SeparableConv2D(64, (4, 4), activation='relu')(x)
+x = MaxPooling2D((3, 3))(x)
+x = SeparableConv2D(128, (6, 6), activation='relu')(x)
+x = MaxPooling2D((5, 5))(x)
 x = Flatten()(x)
 x = Dense(64, activation='relu')(x)
-x = Dropout(0.4)(x)
+x = Dropout(0.3)(x)
 
 # Output for bounding boxes
 bbox_output = Dense(max_boxes * 4, activation='sigmoid', name='bbox_output')(x)
@@ -151,10 +149,10 @@ model.compile(optimizer=Adam(learning_rate=0.0001), loss='mse', metrics=['accura
 #reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=150, min_lr=0.00001)
 
 # Use the custom callback
-dropout_scheduler = DropoutRateScheduler(epoch_threshold=400, initial_rate=0.4, new_rate=0.6)
+dropout_scheduler = DropoutRateScheduler(epoch_threshold=30, initial_rate=0.2, new_rate=0.4)
 
 with tf.device('/GPU:0'):
-    history = model.fit(x_train, bbox_train, epochs=700, batch_size=16, validation_data=(x_test, bbox_test), callbacks=[dropout_scheduler])
+    history = model.fit(x_train, bbox_train, epochs=250, batch_size=32, validation_data=(x_test, bbox_test), callbacks=[])
 
 loss, accuracy = model.evaluate(x_test, bbox_test)
 print(f"Test loss: {loss}")
